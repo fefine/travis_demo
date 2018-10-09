@@ -4,25 +4,18 @@ language: go
 services:
   - docker
 
+env:
+  - APP_NAME=travis_demo
+  - AWS_ACCOUNT=536632768309
+
 script:
   - make build
 
 after_success:
-  - echo "$TRAVIS_BRANCH"
-  - echo "$TRAVIS_PULL_REQUEST"
-
-#before_install:
-#  - sudo add-apt-repository ppa:cpick/hub -y
-#  - sudo apt-get update
-#  - sudo apt-get install hub -y --allow-unauthenticated
-#
-#after_success:
-## deploy staging if push master
-#  - if [ "$TRAVIS_BRANCH" = "master" ] && [ "$TRAVIS_PULL_REQUEST" = "false" ]; then bash scripts/deploy_stag.sh; fi
-#  - if [ "$TRAVIS_BRANCH" = "master" ] && [ "$TRAVIS_PULL_REQUEST" = "false" ]; then bash scripts/ecs_deploy_grpc_stag.sh; fi
-#  - if [ "$TRAVIS_BRANCH" = "master" ] && [ "$TRAVIS_PULL_REQUEST" = "false" ]; then bash scripts/ecs_deploy_http_stag.sh; fi
-#
-#  # deploy production if add new release
-#  - if [ -n "$TRAVIS_TAG" ]; then bash scripts/deploy_prod.sh; fi
-#  - if [ -n "$TRAVIS_TAG" ]; then bash scripts/ecs_deploy_grpc_prod.sh ; fi
-#  - if [ -n "$TRAVIS_TAG" ]; then bash scripts/ecs_deploy_http_prod.sh ; fi
+  - docker --version  # document the version travis is using
+  - pip install --user awscli # install aws cli w/o sudo
+  - export PATH=$PATH:$HOME/.local/bin # put aws in the path
+  - eval $(aws ecr get-login --region us-east-1) #needs AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY envvars
+  - docker build -t $APP_NAME .
+  - docker tag $APP_NAME:$TRAVIS_BUILD_ID $AWS_ACCOUNT.dkr.ecr.us-east-1.amazonaws.com/$APP_NAME:$TRAVIS_BUILD_ID
+  - docker push $AWS_ACCOUNT.dkr.ecr.us-east-1.amazonaws.com/$APP_NAME:$TRAVIS_BUILD_ID
