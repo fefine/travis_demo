@@ -5,8 +5,7 @@ services:
   - docker
 
 env:
-  - APP_NAME=travis_demo
-  - AWS_ACCOUNT=536632768309
+  - APP_NAME=travis_demo AWS_ACCOUNT=536632768309
 
 script:
   - make build
