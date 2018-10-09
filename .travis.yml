@@ -1,0 +1,28 @@
+sudo: required
+language: go
+
+services:
+  - docker
+
+script:
+  - make build
+
+after_success:
+  - echo "$TRAVIS_BRANCH"
+  - echo "$TRAVIS_PULL_REQUEST"
+
+#before_install:
+#  - sudo add-apt-repository ppa:cpick/hub -y
+#  - sudo apt-get update
+#  - sudo apt-get install hub -y --allow-unauthenticated
+#
+#after_success:
+## deploy staging if push master
+#  - if [ "$TRAVIS_BRANCH" = "master" ] && [ "$TRAVIS_PULL_REQUEST" = "false" ]; then bash scripts/deploy_stag.sh; fi
+#  - if [ "$TRAVIS_BRANCH" = "master" ] && [ "$TRAVIS_PULL_REQUEST" = "false" ]; then bash scripts/ecs_deploy_grpc_stag.sh; fi
+#  - if [ "$TRAVIS_BRANCH" = "master" ] && [ "$TRAVIS_PULL_REQUEST" = "false" ]; then bash scripts/ecs_deploy_http_stag.sh; fi
+#
+#  # deploy production if add new release
+#  - if [ -n "$TRAVIS_TAG" ]; then bash scripts/deploy_prod.sh; fi
+#  - if [ -n "$TRAVIS_TAG" ]; then bash scripts/ecs_deploy_grpc_prod.sh ; fi
+#  - if [ -n "$TRAVIS_TAG" ]; then bash scripts/ecs_deploy_http_prod.sh ; fi
